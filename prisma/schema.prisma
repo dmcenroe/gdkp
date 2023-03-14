@@ -20,6 +20,86 @@ model Example {
     updatedAt DateTime @updatedAt
 }
 
+model Character {
+    id        String   @id @default(cuid())
+    userId    String
+    name      String
+    class     String
+    user      User @relation(fields: [userId], references: [id], onDelete: Cascade)
+    participants Participants[]
+    items        SegmentItem[]
+    signUps      SignUpCharacter[]
+}
+
+model Event {
+    id          String   @id @default(cuid())
+    date        DateTime?
+    hostId      String?
+    slug        String
+    token       String
+    kronoValue  Int         @default(5000)
+    hostCut     Int         @default(10)
+    name        String?
+    description String?
+    status      String
+    createdAt   DateTime    @default(now())
+    updatedAt   DateTime    @updatedAt
+    host        User? @relation(fields: [hostId], references: [id], onDelete: Cascade)
+    segments    Segment[]
+    signUps     SignUpCharacter[]
+}
+
+model Segment {
+    id              String   @id @default(cuid())
+    eventId         String
+    name            String
+    totalEarnings   String
+    event           Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    participants    Participants[]
+    items           SegmentItem[]
+}
+
+//model for linking characters to a segment
+model Participants {
+    segment         Segment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+    segmentId       String
+    character       Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+    characterId     String
+
+    @@id([segmentId, characterId])
+}
+
+model SegmentItem {
+    segment         Segment @relation(fields: [segmentId], references: [id], onDelete: Cascade)
+    segmentId       String
+    character       Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+    characterId     String
+    item            Item    @relation(fields: [lucyId], references: [lucyId], onDelete: Cascade)
+    lucyId          String
+    rot             Boolean @default(false)
+    price           Int
+    paymentType     String
+
+    @@id([segmentId, characterId])
+}
+
+model Item {
+    lucyId      String @id
+    lucyLink    String
+    name        String
+    segments    SegmentItem[]
+}
+
+model SignUpCharacter {
+    eventId         String
+    event           Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+    character       Character @relation(fields: [characterId], references: [id], onDelete: Cascade)
+    characterId     String
+
+    @@id([eventId,characterId])
+
+}
+
 // Necessary for Next auth
 model Account {
     id                String  @id @default(cuid())
@@ -55,6 +135,8 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+    characters    Character[]
+    events        Event[]
 }
 
 model VerificationToken {
