@@ -4,28 +4,26 @@ import { Prisma } from "@prisma/client";
 import React, { FormEventHandler, useEffect, useState } from "react";
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
-  const eventSlug = context.params?.eventslug;
+  try {
+    const eventSlug = context.params?.eventslug;
+    let response;
 
-  const response = await fetch(`http://localhost:3000/api/event/${eventSlug}`);
-  const event: Event = await response.json();
+    const env = process.env.NODE_ENV;
+    if (env == "development") {
+      response = await fetch(`http://localhost:3000/api/event/${eventSlug}`);
+    } else if (env == "production") {
+      response = await fetch(
+        `https://gdkp-eta.vercel.app/api/event/${eventSlug}`
+      );
+    }
+    const event: Event = await response?.json();
+  } catch (error) {
+    console.log(error);
+  }
 
   return {
     props: { event },
   };
-}
-
-interface Event {
-  id: string;
-  hostId?: string;
-  slug: string;
-  token: string;
-  kronoValue: number;
-  hostCut: number;
-  name?: string;
-  description?: string;
-  status: string;
-  updatedAt: string;
-  createdAt: string;
 }
 
 interface EventProps {
