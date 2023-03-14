@@ -18,7 +18,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     }
     const event: Event = await response?.json();
   } catch (error) {
-    console.log(error);
+    console.log("HELP!", error);
   }
 
   return {
