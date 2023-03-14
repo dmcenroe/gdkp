@@ -5,11 +5,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const slug = req.query.slug as string;
+  try {
+    const slug = req.query.slug as string;
+    const event = await prisma.event.findFirst({
+      where: { slug: slug },
+    });
 
-  const event = await prisma.event.findFirst({
-    where: { slug: slug },
-  });
-
-  res.status(200).send(event);
+    res.status(200).send(event);
+  } catch (error) {
+    console.log(error);
+  }
 }

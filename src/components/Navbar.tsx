@@ -1,16 +1,23 @@
 import { signIn, signOut, useSession } from "next-auth/react";
 import Image from "next/image";
+import { useRouter } from "next/router";
 
 export function Navbar() {
   const { data: sessionData } = useSession();
+  const router = useRouter();
 
   const handleNewEvent = async () => {
-    const newEvent = await fetch("/api/newevent");
+    const response = await fetch("/api/newevent");
+    const event = await response.json();
+    router.push(`/event/${event.slug}`);
+    window.localStorage.setItem(event.slug, event.token);
+
+    console.log(event);
   };
 
   return (
     <nav className="flex h-24 flex-row items-center justify-between px-6">
-      <p className="font-sans text-5xl font-black tracking-tighter">ggdkp</p>
+      <p className="font-sans text-5xl font-black tracking-tighter">gdkp</p>
 
       <div className="ACTIONS flex flex-row items-center gap-12">
         <button
@@ -26,7 +33,7 @@ export function Navbar() {
           {sessionData?.user.image && (
             <Image
               className="rounded-full"
-              src={sessionData ? sessionData.user?.image : null}
+              src={sessionData && sessionData.user?.image}
               width={42}
               height={42}
               alt="user avatar image"
