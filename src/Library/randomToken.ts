@@ -46,7 +46,7 @@ const generateRandomNumber = (length: number) => {
 function PickRandomWord() {
   const num: string = generateRandomNumber(2);
   const word: string = words[
-    Math.ceil(Math.random() * NumberOfWords)
+    Math.ceil(Math.random() * NumberOfWords - 1)
   ] as string;
 
   const token = word + num;
