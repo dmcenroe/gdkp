@@ -17,13 +17,13 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       );
     }
     const event: Event = await response?.json();
+
+    return {
+      props: { event },
+    };
   } catch (error) {
     console.log("HELP!", error);
   }
-
-  return {
-    props: { event },
-  };
 }
 
 interface EventProps {
